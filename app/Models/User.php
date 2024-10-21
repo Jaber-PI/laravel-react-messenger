@@ -3,7 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -17,8 +20,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'avatar',
+        'is_admin',
         'name',
         'email',
+        'email_verified_at',
         'password',
     ];
 
@@ -42,6 +48,52 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+        ];
+    }
+
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'groups_users');
+    }
+
+    public static function getUsersExcept(User $user)
+    {
+        $userId = $user->id;
+        $query  = User::query()
+            ->select(['users.*', 'messages.message as last_message', 'messages.created_at as last_message_date'])
+            ->where('users.id', '!=', $userId)
+            ->when(!$user->is_admin, function ($builder) {
+                $builder->whereNull('users.blocked_at');
+            })
+            ->leftJoin('conversations', function (Builder $query) use ($userId) {
+                $query->on('conversations.user_id1', '=', 'users.id')
+                    ->where('user_id2', '=', $userId)
+                    ->orWhere(function (Builder $builder)  use ($userId) {
+                        $builder->on('conversations.user_id2', '=', 'users.id')
+                            ->where('user_id1', '=', $userId);
+                    });
+            })
+            ->leftJoin('messages', 'messages.id', 'conversations.last_message_id')
+            ->orderByRaw('IFNULL(users.blocked_at,1)')
+            ->orderBy('messages.created_at', 'desc')
+            ->orderBy('users.name');
+
+        return $query->get();
+    }
+
+    public function  toConversationArray()
+    {
+        return [
+            'id'=> $this->id,
+            'name' => $this->name,
+            'is_group' => false,
+            'is_user' => true,
+            'is_admin'=> (bool) $this->is_admin,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'blocked_at' => $this->blocked_at,
+            'last_message' => $this->last_message,
+            'last_message_date' => $this->last_message_date . ' UTC',
         ];
     }
 }

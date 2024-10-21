@@ -1,17 +1,26 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [HomeController::class, 'home'])->name('dashboard');
+    Route::controller(MessageController::class)->name('chat.')->group(function () {
+        Route::get('/user/{user}', 'byUser')->name('user');
+        Route::get('/group/{group}', 'byGroup')->name('group');
+
+        Route::post('/message', 'store')->name('store');
+
+        Route::delete('/message/{message}', 'destroy')->name('destroy');
+
+        Route::get('/message/older/{message}', 'loadOlder')->name('loadOlder');
+
+
+    });
 });
 
 Route::get('/dashboard', function () {
@@ -24,4 +33,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
