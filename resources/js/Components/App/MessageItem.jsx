@@ -4,6 +4,7 @@ import UserAvatar from "./UserAvatar";
 
 import { formatMessageDateLong } from "@/helpers";
 import { usePage } from "@inertiajs/react";
+import MessageAttachments from "./MessageAttachments";
 
 export default function MessageItem({ message, attachmentClick }) {
     const currentUser = usePage().props.auth.user;

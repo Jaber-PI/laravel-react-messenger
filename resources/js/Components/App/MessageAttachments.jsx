@@ -29,7 +29,7 @@ const MessageAttachments = ({ attachments, attachmentClick }) => {
                                     href={attachment.url}
                                     className="z-20 opacity-100 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center text-gray-100 -gray-700 rounded absolute right-0 top-0 cursor-pointer hover:bg-gray-800"
                                 >
-                                    <ArrowDownTrayIcon/>
+                                    <ArrowDownTrayIcon className="w-8 h-8 text-white "/>
                                 </a>
                             )}
                             {isImage(attachment) && (
