@@ -8,10 +8,13 @@ import {
     FaceSmileIcon,
     HandThumbUpIcon,
     PaperAirplaneIcon,
+    XCircleIcon,
 } from "@heroicons/react/24/solid";
 import NewMessageInput from "./NewMessageInput";
 import axios from "axios";
 import AttachmentPreview from "./AttachmentPreview";
+import { isAudio, isImage } from "@/helpers";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 
 export default function MessageInput({ conversation = null }) {
     const [newMessage, setNewMessage] = useState("");
@@ -53,6 +56,8 @@ export default function MessageInput({ conversation = null }) {
             };
         });
 
+        ev.target.files = null;
+
         setChosenFiles((prev) => {
             return [...prev, ...updatedFiles];
         });
@@ -62,7 +67,7 @@ export default function MessageInput({ conversation = null }) {
         if (messageSending) {
             return;
         }
-        if (newMessage.trim() === "") {
+        if (newMessage.trim() === "" && chosenFiles.length === 0) {
             setInputErrorMessage(
                 "Please provide a message or upload attachements."
             );
@@ -165,7 +170,7 @@ export default function MessageInput({ conversation = null }) {
                 {inputErrorMessage && (
                     <p className="text-xs text-red-400">{inputErrorMessage}</p>
                 )}
-                <div className="flex flex-wrap gap-1 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                     {chosenFiles.map((file) => (
                         <div
                             key={file.file.name}
@@ -191,14 +196,15 @@ export default function MessageInput({ conversation = null }) {
                                 <AttachmentPreview file={file} />
                             )}
                             <button
-                            onClick={()=>{
-                                setChosenFiles(
-                                    chosenFiles.filter(
-                                        (f) => f.file.name !== file.file.name
-                                    )
-                                )
-                            }}
-                            className="absolute w-6 h-6 rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10"
+                                onClick={() => {
+                                    setChosenFiles(
+                                        chosenFiles.filter(
+                                            (f) =>
+                                                f.file.name !== file.file.name
+                                        )
+                                    );
+                                }}
+                                className="absolute w-6 h-6 rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10"
                             >
                                 <XCircleIcon className="w-6" />
                             </button>

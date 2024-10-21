@@ -7,6 +7,7 @@ import MessageInput from "@/Components/App/MessageInput";
 import MessageItem from "@/Components/App/MessageItem";
 import { useEventBus } from "@/EventBus";
 import axios from "axios";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal";
 
 const Home = ({ messages = null, selectedConversation = null }) => {
     const [localMessages, setLocalMessages] = useState([]);
@@ -20,7 +21,7 @@ const Home = ({ messages = null, selectedConversation = null }) => {
     const onAttachmentClick = (attachments, index) => {
         setPreviewAttachment({
             attachments,
-            index,
+            index
         });
         setShowAttachmentPreview(true);
     };

@@ -8,9 +8,8 @@ use App\Http\Resources\messageResource;
 use App\Models\Conversation;
 use App\Models\Group;
 use App\Models\Message;
-use App\Models\MessageAttachement;
+use App\Models\MessageAttachment;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -28,6 +27,7 @@ class MessageController extends Controller
                 $builder->where('receiver_id', auth()->id())
                     ->where('sender_id', $user->id);
             })
+            ->with('attachments')
             ->latest()
             ->paginate(20);
 
@@ -88,13 +88,13 @@ class MessageController extends Controller
         $groupId = $data['group_id'] ?? null;
 
         $files = $data['attachments'] ?? null;
+        unset($data['attachments']);
 
         $message = Message::create($data);
 
 
         if ($files) {
             $attachements = [];
-
             foreach ($files as $file) {
                 $directory = 'attachements/' . Str::random(32);
                 Storage::makeDirectory($directory);
@@ -106,7 +106,7 @@ class MessageController extends Controller
                     'path' => $file->store($directory, 'public'),
 
                 ];
-                $attachements[] = MessageAttachement::create($model);
+                $attachements[] = MessageAttachment::create($model);
             }
 
             $message->attachments = $attachements;

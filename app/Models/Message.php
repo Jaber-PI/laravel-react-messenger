@@ -16,7 +16,6 @@ class Message extends Model
         return $this->belongsTo(User::class,'sender_id');
     }
 
-
     public function receiver(){
         return $this->belongsTo(User::class,'receiver_id');
     }
@@ -31,6 +30,6 @@ class Message extends Model
     }
 
     public function attachments(){
-        return $this->hasMany(MessageAttachement::class,'group_id');
+        return $this->hasMany(MessageAttachment::class,'message_id');
     }
 }

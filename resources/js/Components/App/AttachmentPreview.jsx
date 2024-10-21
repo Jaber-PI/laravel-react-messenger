@@ -4,11 +4,11 @@ import { formatBytes, isPdf, isPreviewable } from "@/helpers";
 
 const AttachmentPreview = ({ file }) => {
     return (
-        <div className="w-full flex items-center gap-2 py-2 rounded-md bg-slate-800">
+        <div className="w-full flex items-center gap-2 px-1 py-2 rounded-md bg-slate-800">
             <div className="">
-                {isPdf(file.file) && <img src="/img/pdf.png" className="w-8" />}
+                {isPdf(file.file) && <img src="/img/pdf.jpg" className="w-8" />}
                 {!isPreviewable(file.file) && (
-                    <div className="flex justify-center items-center w-10 bg-gray-700 rounded">
+                    <div className="flex justify-center items-center w-10 h-10 bg-gray-700 rounded">
                         <PaperClipIcon className="w-6" />
                     </div>
                 )}

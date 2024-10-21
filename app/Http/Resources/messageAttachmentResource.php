@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class messageAttachementResource extends JsonResource
+class messageAttachmentResource extends JsonResource
 {
 
     public static $wrap = false;
@@ -25,7 +25,7 @@ class messageAttachementResource extends JsonResource
             'name' => $this->name,
             'mime' => $this->mime,
             'size' => $this->size,
-            'url' => Storage::url($this->url),
+            'url' => Storage::url($this->path),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
