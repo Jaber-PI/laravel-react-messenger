@@ -16,6 +16,7 @@ import AttachmentPreview from "./AttachmentPreview";
 import { isAudio, isImage } from "@/helpers";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import AudioRecorder from "./AudioRecorder";
+import { useEventBus } from "@/EventBus";
 
 export default function MessageInput({ conversation = null }) {
     const [newMessage, setNewMessage] = useState("");
@@ -24,6 +25,7 @@ export default function MessageInput({ conversation = null }) {
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [chosenFiles, setChosenFiles] = useState([]);
+
 
     const onLikeClick = (ev) => {
         if (messageSending) {
@@ -65,6 +67,7 @@ export default function MessageInput({ conversation = null }) {
     };
 
     const onSendClick = (ev) => {
+
         if (messageSending) {
             return;
         }
