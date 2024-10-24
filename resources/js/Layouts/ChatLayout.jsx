@@ -1,12 +1,13 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import TextInput from "@/Components/TextInput";
 import ConversationItem from "@/Components/App/ConversationItem";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 import { useEventBus } from "@/EventBus";
 
 // import Echo from "laravel-echo";
 import { useEffect, useState } from "react";
+import GroupModal from "@/Components/App/GroupModal";
 
 const ChatLayout = ({ user, header, children }) => {
     const page = usePage();
@@ -16,8 +17,9 @@ const ChatLayout = ({ user, header, children }) => {
     const [sortedConversations, setSortedConversations] = useState([]);
 
     const [onlineUsers, setOnlineUsers] = useState({});
+    const [showGroupModal, setShowGroupModal] = useState(false);
 
-    const { on } = useEventBus();
+    const { on, emit } = useEventBus();
 
     const isOnline = (userId) => onlineUsers[userId];
 
@@ -64,6 +66,9 @@ const ChatLayout = ({ user, header, children }) => {
     const onMesssageDeleted = ({ message, lastMessage }) => {
         setLocalConversations((old) => {
             return old.map((conv) => {
+                if (conv.last_message_date != message.created_at) {
+                    return conv;
+                }
                 if (
                     message.receiver_id &&
                     !conv.is_group &&
@@ -87,6 +92,22 @@ const ChatLayout = ({ user, header, children }) => {
                 return conv;
             });
         });
+    };
+
+    const onGroupDeleted = ({ group_id, group_name }) => {
+        setLocalConversations((old) => {
+            // filter conversation
+            return old.filter((conv) => conv.is_group && conv.id === group_id);
+        });
+        emit("toast.show", `Group "${group_name}" was deleted`);
+
+        if (
+            !selectedConversation ||
+            (selectedConversation.is_group &&
+                selectedConversation.id == group_id)
+        ) {
+            router.visit(route("dashboard"));
+        }
     };
 
     useEffect(() => {
@@ -118,7 +139,15 @@ const ChatLayout = ({ user, header, children }) => {
         const offMessageCreated = on("message.created", onMesssageCreated);
         const offMessageDeleted = on("message.deleted", onMesssageDeleted);
 
+        const offGroupDeleted = on("group.deleted", onGroupDeleted);
+
+        const offGroupModalShow = on("GroupModal.show", (group) => {
+            setShowGroupModal(true);
+        });
+
         return () => {
+            offGroupDeleted();
+            offGroupModalShow();
             offMessageCreated();
             offMessageDeleted();
         };
@@ -174,7 +203,10 @@ const ChatLayout = ({ user, header, children }) => {
                             className="tooltip tooltip-left"
                             data-tip="Create new Group"
                         >
-                            <button className="text-grey-400 hover:text-gray-200">
+                            <button
+                                className="text-grey-400 hover:text-gray-200"
+                                onClick={() => setShowGroupModal(true)}
+                            >
                                 <PencilSquareIcon className="w-4  h-4 inline-block ml-2" />
                             </button>
                         </div>
@@ -204,6 +236,12 @@ const ChatLayout = ({ user, header, children }) => {
                 </div>
                 <div className="flex-1 flex flex-col">{children}</div>
             </div>
+            <GroupModal
+                show={showGroupModal}
+                onClose={() => {
+                    setShowGroupModal(false);
+                }}
+            />
         </>
     );
 };

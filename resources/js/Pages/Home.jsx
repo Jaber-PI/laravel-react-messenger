@@ -100,6 +100,9 @@ const Home = ({ messages = null, selectedConversation = null }) => {
     };
 
     useEffect(() => {
+        if(!selectedConversation) {
+            return;
+        }
         setTimeout(() => {
             if (messagesCtrRef.current) {
                 messagesCtrRef.current.scrollTop =
@@ -124,6 +127,9 @@ const Home = ({ messages = null, selectedConversation = null }) => {
     }, [messages]);
 
     useEffect(() => {
+        if(!messagesCtrRef.current) {
+            return;
+        }
         if (messagesCtrRef.current && scrollFromBottom !== null) {
             messagesCtrRef.current.scrollTop =
                 messagesCtrRef.current.scrollHeight -
@@ -155,7 +161,7 @@ const Home = ({ messages = null, selectedConversation = null }) => {
 
     return (
         <>
-            {!messages == null && (
+            {messages == null && (
                 <div className="flex flex-col gap-8 justify-center items-center text-center h-full opacity-35">
                     <div className="text-2xl md:text-4xl p-16 text-slate-200">
                         Please select a conversation to see messages
@@ -197,6 +203,7 @@ const Home = ({ messages = null, selectedConversation = null }) => {
                     <MessageInput conversation={selectedConversation} />
                 </>
             )}
+            {/* attachments preview modal  */}
             {previewAttachment.attachments && (
                 <AttachmentPreviewModal
                     attachments={previewAttachment.attachments}

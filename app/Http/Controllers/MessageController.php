@@ -104,7 +104,6 @@ class MessageController extends Controller
                     'mime' => $file->getClientMimeType(),
                     'size' => $file->getSize(),
                     'path' => $file->store($directory, 'public'),
-
                 ];
                 $attachements[] = MessageAttachment::create($model);
             }
@@ -144,7 +143,7 @@ class MessageController extends Controller
         if ($group) {
             $lastMessage = $group->fresh()->lastMessage;
         } else {
-            $lastMessage = $conv->fresh()?->lastMessage;
+            $lastMessage = $conv?->fresh()?->lastMessage;
         }
 
         return response(['last_message' => $lastMessage ? new messageResource($lastMessage) : null]);

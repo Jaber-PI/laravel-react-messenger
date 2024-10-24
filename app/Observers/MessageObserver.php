@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Models\Conversation;
 use App\Models\Group;
 use App\Models\Message;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Storage;
 
 class MessageObserver

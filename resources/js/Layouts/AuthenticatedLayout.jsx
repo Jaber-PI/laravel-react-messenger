@@ -29,7 +29,6 @@ export default function Authenticated({ header, children }) {
                     .sort((a, b) => a - b)
                     .join("-")}`;
             }
-
             Echo.private(channel)
                 .error((error) => {
                     console.log(error);
@@ -56,6 +55,19 @@ export default function Authenticated({ header, children }) {
                             }`,
                     });
                 });
+
+            if (conversation.is_group) {
+                let channel = `group.deleted.${conversation.id}`;
+                Echo.private(channel)
+                    .error((error) => {
+                        console.log(error);
+                    })
+                    .listen("GroupDeleted", (e) => {
+                        const group_id = conversation.id;
+                        const group_name = conversation.name;
+                        emit("group.deleted", { group_id, group_name });
+                    });
+            }
         });
 
         return () => {
@@ -70,6 +82,10 @@ export default function Authenticated({ header, children }) {
                         .join("-")}`;
                 }
                 Echo.leave(channel);
+                if (conv.is_group) {
+                    let channel = `group.deleted.${conv.id}`;
+                    Echo.leave(channel);
+                }
             });
         };
     }, [conversations]);
@@ -237,7 +253,7 @@ export default function Authenticated({ header, children }) {
                 {children}
             </div>
             <Toast />
-            <NewMessageNotification/>
+            <NewMessageNotification />
         </>
     );
 }

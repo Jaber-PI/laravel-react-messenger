@@ -65,8 +65,8 @@ class Group extends Model
      // update conversation last message
      public static function updateGroupWithMessage($groupId, $message)
      {
-         $conversation = static::find($groupId);
-         $conversation->last_message_id = $message->id;
-         $conversation->last_message_date = $message->created_at;
+         $group = static::find($groupId);
+         $group->last_message_id = $message->id;
+         $group->save();
      }
 }

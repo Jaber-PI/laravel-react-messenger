@@ -20,17 +20,24 @@ export default function NewMessageInput({ value, onChange, onSend }) {
     const adjustHeight = () => {
         setTimeout(() => {
             input.current.style.height = "auto";
-            input.current.style.height =
-                input.current.scrollHeight + 1 + "px";
+            input.current.style.height = input.current.scrollHeight + 1 + "px";
         }, 100);
     };
 
     useEffect(() => {
+        input.current.focus();
         adjustHeight();
     }, [value]);
 
+    useEffect(() => {
+        if (input.current) {
+            input.current.focus();
+        }
+    });
     return (
         <textarea
+            autoFocus
+            onFocus={(e) => e.currentTarget.select()}
             ref={input}
             value={value}
             rows={"1"}

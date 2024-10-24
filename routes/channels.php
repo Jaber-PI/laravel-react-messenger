@@ -15,3 +15,7 @@ Broadcast::channel('chat.user.{userId1}-{userId2}', function (User $user, int $u
 Broadcast::channel('chat.group.{groupId}', function (User $user, int $groupId) {
     return $user->groups()->find($groupId) ? new UserResource($user) : null;
 });
+
+Broadcast::channel('group.deleted.{groupId}', function (User $user, int $groupId) {
+    return $user->groups()->find($groupId) ? new UserResource($user) : null;
+});
