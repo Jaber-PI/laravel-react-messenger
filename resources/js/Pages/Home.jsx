@@ -21,7 +21,7 @@ const Home = ({ messages = null, selectedConversation = null }) => {
     const onAttachmentClick = (attachments, index) => {
         setPreviewAttachment({
             attachments,
-            index
+            index,
         });
         setShowAttachmentPreview(true);
     };
@@ -78,6 +78,26 @@ const Home = ({ messages = null, selectedConversation = null }) => {
             setLocalMessages((prevMessages) => [...prevMessages, message]);
         }
     };
+    const messageDeleted = ({ message }) => {
+        if (
+            selectedConversation &&
+            selectedConversation.is_group &&
+            selectedConversation.id == message.group_id
+        ) {
+            setLocalMessages((prevMessages) =>
+                prevMessages.filter((ele) => ele.id != message.id)
+            );
+        } else if (
+            selectedConversation &&
+            selectedConversation.is_user &&
+            (selectedConversation.id == message.sender_id ||
+                selectedConversation.id == message.receiver_id)
+        ) {
+            setLocalMessages((prevMessages) =>
+                prevMessages.filter((ele) => ele.id != message.id)
+            );
+        }
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -91,9 +111,11 @@ const Home = ({ messages = null, selectedConversation = null }) => {
         setNoMoreMessages(false);
 
         const offMessageCreated = on("message.created", messageCreated);
+        const offMessageDeleted = on("message.deleted", messageDeleted);
 
         return () => {
             offMessageCreated();
+            offMessageDeleted();
         };
     }, [selectedConversation]);
 

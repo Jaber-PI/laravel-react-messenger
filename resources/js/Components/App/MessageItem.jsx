@@ -5,6 +5,7 @@ import UserAvatar from "./UserAvatar";
 import { formatMessageDateLong } from "@/helpers";
 import { usePage } from "@inertiajs/react";
 import MessageAttachments from "./MessageAttachments";
+import MessageOptionsDropdown from "./MessageOptionsDropDown";
 
 export default function MessageItem({ message, attachmentClick }) {
     const currentUser = usePage().props.auth.user;
@@ -29,12 +30,13 @@ export default function MessageItem({ message, attachmentClick }) {
             </div>
             <div
                 className={
-                    "chat-bubble relative " +
+                    "chat-bubble relative flex justify-between " +
                     (message.sender_id === currentUser.id
                         ? "chat-bubble-info"
                         : "")
                 }
             >
+                <MessageOptionsDropdown message={message} dropLeft={message.sender_id === currentUser.id} />
                 <div className="chat-message">
                     <div className="chat-message-content">
                         <ReactMarkdown>{message.message}</ReactMarkdown>

@@ -33,8 +33,6 @@ const ChatLayout = ({ user, header, children }) => {
         );
     };
 
-
-
     const onMesssageCreated = (message) => {
         setLocalConversations((old) => {
             return old.map((conv) => {
@@ -63,6 +61,33 @@ const ChatLayout = ({ user, header, children }) => {
             });
         });
     };
+    const onMesssageDeleted = ({ message, lastMessage }) => {
+        setLocalConversations((old) => {
+            return old.map((conv) => {
+                if (
+                    message.receiver_id &&
+                    !conv.is_group &&
+                    (conv.id == message.sender_id ||
+                        conv.id == message.receiver_id)
+                ) {
+                    conv.last_message = lastMessage.message;
+                    conv.last_message_date = lastMessage.created_at;
+                    return conv;
+                }
+                if (
+                    message.group_id &&
+                    conv.is_group &&
+                    conv.id == message.group_id
+                ) {
+                    conv.last_message = lastMessage.message;
+                    conv.last_message_date = lastMessage.created_at;
+                    return conv;
+                }
+
+                return conv;
+            });
+        });
+    };
 
     useEffect(() => {
         setSortedConversations(
@@ -75,7 +100,9 @@ const ChatLayout = ({ user, header, children }) => {
                 //     return -1;
                 // }
                 if (a.last_message_date && b.last_message_date) {
-                    return b.last_message_date.localeCompare(a.last_message_date);
+                    return b.last_message_date.localeCompare(
+                        a.last_message_date
+                    );
                 } else if (a.last_message_date) {
                     return -1;
                 } else if (b.last_message_date) {
@@ -88,9 +115,12 @@ const ChatLayout = ({ user, header, children }) => {
     }, [localConversations]);
 
     useEffect(() => {
-        const off = on("message.created", onMesssageCreated);
+        const offMessageCreated = on("message.created", onMesssageCreated);
+        const offMessageDeleted = on("message.deleted", onMesssageDeleted);
+
         return () => {
-            off();
+            offMessageCreated();
+            offMessageDeleted();
         };
     }, [on]);
 

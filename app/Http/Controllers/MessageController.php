@@ -128,7 +128,25 @@ class MessageController extends Controller
         if ($message->sender_id !== auth()->id()) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
+
+        $group = null;
+        $conv = null;
+        if ($message->group_id) {
+            $group = Group::where('last_message_id', $message->id)->first();
+        } else {
+            $conv = Conversation::where('last_message_id', $message->id)->first();
+        }
+
+
         $message->delete();
-        return response('', Response::HTTP_NO_CONTENT);
+
+
+        if ($group) {
+            $lastMessage = $group->fresh()->lastMessage;
+        } else {
+            $lastMessage = $conv->fresh()?->lastMessage;
+        }
+
+        return response(['last_message' => $lastMessage ? new messageResource($lastMessage) : null]);
     }
 }
