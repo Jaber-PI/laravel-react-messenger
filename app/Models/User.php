@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -88,6 +89,7 @@ class User extends Authenticatable
             'name' => $this->name,
             'is_group' => false,
             'is_user' => true,
+            'avatar' => $this->avatar ? Storage::url($this->avatar):null,
             'is_admin'=> (bool) $this->is_admin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

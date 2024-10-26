@@ -33,7 +33,6 @@ const Home = ({ messages = null, selectedConversation = null }) => {
 
     const loadOlderMessages = () => {
         const firstMesage = localMessages[0];
-        console.log(noMoreMessages);
         if (noMoreMessages) {
             return;
         }

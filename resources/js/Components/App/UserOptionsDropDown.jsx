@@ -1,4 +1,4 @@
-import {Menu,Transition} from "@headlessui/react"
+import {Menu,MenuButton,MenuItem,MenuItems,Transition} from "@headlessui/react"
 import {Fragment} from "react"
 import {
     EllipsisVerticalIcon,
@@ -10,20 +10,21 @@ import {
 } from "@heroicons/react/24/solid"
 
 import axios from "axios";
+import { useEventBus } from "@/EventBus";
 
 export default function UserOptionsDropdown({ conversation }) {
+
+    const {emit} = useEventBus();
     const onBlockUser = (ev) => {
-        console.log("Block user");
         if (!conversation.is_user) {
             return;
         }
         axios
             .post(route("user.blockUnblock", conversation.id))
             .then((res) => {
-                console.log(res.data);
+                emit("toast.show", res.data.message);
             })
             .catch((er) => {
-                console.log(er);
             });
     };
 
@@ -35,7 +36,8 @@ export default function UserOptionsDropdown({ conversation }) {
         axios
             .post(route("user.changeRole", conversation.id))
             .then((res) => {
-                console.log(res.data);
+                emit("toast.show", res.data.message);
+                // console.log(res.data);
             })
             .catch((er) => {
                 console.log(er);
@@ -44,11 +46,11 @@ export default function UserOptionsDropdown({ conversation }) {
 
     return (
         <div>
-            <Menu as="div" className="relative inline-block text-left">
+            <Menu as="div" className="relative w-full inline-block text-left">
                 <div>
-                    <Menu.Button className="flex justify-center items-center w-8 h-8 rounded-full hover:bg-black/40">
+                    <MenuButton className="flex justify-center items-center w-8 h-8 rounded-full hover:bg-black/40">
                         <EllipsisVerticalIcon className="h-5 w-5" />
-                    </Menu.Button>
+                    </MenuButton>
                 </div>
                 <Transition
                     as={Fragment}
@@ -59,9 +61,9 @@ export default function UserOptionsDropdown({ conversation }) {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                 >
-                    <Menu.Items className="absolute right-0 mt-2 rounded-md bg-gray-800 shadow-lg z-50">
+                    <MenuItems className="absolute min-w-40 right-0 mt-2 rounded-md bg-gray-800 shadow-lg z-50">
                         <div className="px-1 py-1">
-                            <Menu.Item>
+                            <MenuItem>
                                 {({ active }) => (
                                     <button
                                         onClick={onBlockUser}
@@ -85,10 +87,10 @@ export default function UserOptionsDropdown({ conversation }) {
                                         )}
                                     </button>
                                 )}
-                            </Menu.Item>
+                            </MenuItem>
                         </div>
                         <div className="px-1 py-1">
-                            <Menu.Item>
+                            <MenuItem>
                                 {({ active }) => (
                                     <button
                                         onClick={changeUserRole}
@@ -112,9 +114,9 @@ export default function UserOptionsDropdown({ conversation }) {
                                         )}
                                     </button>
                                 )}
-                            </Menu.Item>
+                            </MenuItem>
                         </div>
-                    </Menu.Items>
+                    </MenuItems>
                 </Transition>
             </Menu>
         </div>

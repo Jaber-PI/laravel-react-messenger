@@ -7,12 +7,17 @@ import { Link, usePage } from "@inertiajs/react";
 import { useEventBus } from "@/EventBus";
 import Toast from "@/Components/App/Toast";
 import NewMessageNotification from "@/Components/App/NewMessageNotification";
+import PrimaryButton from "@/Components/PrimaryButton";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
+import NewUserModal from "@/Components/App/NewUserModal";
 
 export default function Authenticated({ header, children }) {
     const page = usePage();
     const user = page.props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    const [showingNewUserModal, setShowingNewUserModal] = useState(false);
 
     const conversations = page.props.conversations;
 
@@ -92,7 +97,7 @@ export default function Authenticated({ header, children }) {
 
     return (
         <>
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
+            <div className="min-h-screen  bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
                 <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between h-16">
@@ -114,6 +119,16 @@ export default function Authenticated({ header, children }) {
                             </div>
 
                             <div className="hidden sm:flex sm:items-center sm:ms-6">
+                                {user.is_admin && (
+                                    <PrimaryButton
+                                        onClick={(ev) =>
+                                            setShowingNewUserModal(true)
+                                        }
+                                    >
+                                        <UserPlusIcon className="h-5 w-5 -ms-1 me-1 mr-2" />
+                                        Add New User
+                                    </PrimaryButton>
+                                )}
                                 <div className="ms-3 relative">
                                     <Dropdown>
                                         <Dropdown.Trigger>
@@ -254,6 +269,10 @@ export default function Authenticated({ header, children }) {
             </div>
             <Toast />
             <NewMessageNotification />
+            <NewUserModal
+                show={showingNewUserModal}
+                onClose={() => setShowingNewUserModal(false)}
+            />
         </>
     );
 }

@@ -113,13 +113,13 @@ const ChatLayout = ({ user, header, children }) => {
     useEffect(() => {
         setSortedConversations(
             localConversations.sort((a, b) => {
-                // if (a.blocked_at && b.blocked_at) {
-                //     return a.blocked_at > b.blocked_at ? 1 : -1;
-                // } else if (a.blocked_at) {
-                //     return 1;
-                // } else if (b.blocked_at) {
-                //     return -1;
-                // }
+                if (a.blocked_at && b.blocked_at) {
+                    return a.blocked_at > b.blocked_at ? 1 : -1;
+                } else if (a.blocked_at) {
+                    return 1;
+                } else if (b.blocked_at) {
+                    return -1;
+                }
                 if (a.last_message_date && b.last_message_date) {
                     return b.last_message_date.localeCompare(
                         a.last_message_date
